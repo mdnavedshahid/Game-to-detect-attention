@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scorecard</title>
+    <style>
+        /* Simple table styling */
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            border: 1px solid #333;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #333;
+            text-align: center;
+        }
+
+        th {
+            background-color: #28a745;
+            color: white;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        h2 {
+            text-align: center;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <h2>Game Scorecard</h2>
+    <table id="scorecard-table">
+        <thead>
+            <tr>
+                <th>Player Name</th>
+                <th>Level</th>
+                <th>Score</th>
+                <th>Attention Rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Scores will be displayed here -->
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedScores = JSON.parse(localStorage.getItem('gameScores')) || [];
+            const tableBody = document.getElementById('scorecard-table').getElementsByTagName('tbody')[0];
+
+            storedScores.forEach(record => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${record.playerName}</td>
+                    <td>${record.level}</td>
+                    <td>${record.score}</td>
+                    <td>${record.attentionRate}%</td>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>

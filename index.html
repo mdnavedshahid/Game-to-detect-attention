@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moving Ball Game</title>
+    <style>
+        /* Original CSS remains unchanged */
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            border: 3.9px solid #333;
+            background-image: url('gur.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+        .home-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .scorecard-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Other existing CSS */
+        #player-name-container {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #player-name {
+            width: 60%;
+            height: 29px;
+            font-size: 18px;
+            padding: 10px;
+            border: 2px solid #333;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            outline: none;
+        }
+
+        #player-name:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+        }
+
+        #welcome-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: 1000px;
+            height: 300px;
+            background-image: url('robin.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        #difficulty-screen {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: 600px;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        #difficulty-screen button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        #game-container {
+            display: none;
+            position: relative;
+            width: 800px;
+            height: 440px;
+            border: 2px solid #333;
+            overflow: hidden;
+            background-image: url('45k.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            margin-top: 5px;
+            text-align: center;
+            color: white;
+            border-radius: 18px;
+        }
+
+        #score, #time, #result {
+            margin: 5px;
+            font-size: 20px;
+            color: white;
+        }
+
+        #result {
+            color: black;
+        }
+
+        #ball {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: rgb(13, 13, 59);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #footer {
+            background-color: #d4edda;
+            color: #333;
+            text-align: right;
+            padding: 5px 20px;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: auto;
+            font-size: 14px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            margin: 10px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <audio id="game-music" src="gamesound.mp3" loop autoplay></audio>
+
+    <!-- Home and Scorecard buttons -->
+    <button class="home-button" id="home-button">Home</button>
+    <button class="scorecard-button" id="scorecard-button">Scorecard</button>
+
+    <!-- Welcome Screen -->
+    <div id="welcome-screen">
+        <div id="welcome-message">
+            <h1>Welcome to The Moving Ball Game</h1>
+            <h3>Please be careful and responsible while playing the game.</h3>
+        </div>
+        <div id="player-name-container">
+            <input type="text" id="player-name" placeholder="Enter your name" />
+        </div>
+        <div id="agree-container">
+            <input type="checkbox" id="agree-checkbox"> I agree.<br><br>
+            <button id="ok-button">Start</button>
+        </div>
+    </div>
+
+    <!-- Difficulty Screen -->
+    <div id="difficulty-screen">
+        <h2>Select Difficulty Level</h2>
+        <button class="difficulty-button" data-level="easy">Easy</button>
+        <button class="difficulty-button" data-level="medium">Medium</button>
+        <button class="difficulty-button" data-level="hard">Hard</button>
+    </div>
+
+    <!-- Score Timer -->
+    <div id="score-timer-container" style="display: none;">
+        <button id="start-game-button">Start the Game</button>
+        <div id="score">Score: 0</div>
+        <div id="time">Time: 20</div>
+    </div>
+
+    <!-- Game Container -->
+    <div id="game-container">
+        <div id="ball"></div>
+        <div id="result" style="display: none;"></div>
+        <button id="play-again-button" style="display: none;">Play Again</button>
+    </div>
+
+    <footer id="footer">
+        Developed By - Krishna Gupta & Naved Khan
+    </footer>
+
+    <script>
+        // Game Variables
+        let score = 0;
+        let timeLeft = 20;
+        let ballInterval;
+        let countdown;
+        let isMusicPlaying = true;
+        let selectedDifficulty = 'easy';
+        let gameDuration = 20;
+        const mockDatabase = JSON.parse(localStorage.getItem('gameScores')) || []; // Use localStorage for score saving
+
+        const ball = document.getElementById('ball');
+        const scoreDisplay = document.getElementById('score');
+        const timeDisplay = document.getElementById('time');
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const difficultyScreen = document.getElementById('difficulty-screen');
+        const gameContainer = document.getElementById('game-container');
+        const okButton = document.getElementById('ok-button');
+        const agreeCheckbox = document.getElementById('agree-checkbox');
+        const startGameButton = document.getElementById('start-game-button');
+        const playerNameInput = document.getElementById('player-name');
+        const scoreTimerContainer = document.getElementById('score-timer-container');
+        const resultDisplay = document.getElementById('result');
+        const playAgainButton = document.getElementById('play-again-button');
+
+        // Home button functionality
+        document.getElementById('home-button').addEventListener('click', () => {
+            window.location.href = 'index.html'; // Redirect to homepage
+        });
+
+        // Scorecard button functionality
+        document.getElementById('scorecard-button').addEventListener('click', () => {
+            window.location.href = 'scorecard.html'; // Correct redirection to scorecard.html
+        });
+
+        okButton.addEventListener('click', () => {
+            if (agreeCheckbox.checked && playerNameInput.value.trim() !== "") {
+                welcomeScreen.style.display = 'none';
+                difficultyScreen.style.display = 'flex';
+            } else {
+                alert("Please agree to the terms and enter your name before starting the game.");
+            }
+        });
+
+        // Difficulty selection
+        document.querySelectorAll('.difficulty-button').forEach(button => {
+            button.addEventListener('click', () => {
+                selectedDifficulty = button.getAttribute('data-level');
+                difficultyScreen.style.display = 'none';
+                scoreTimerContainer.style.display = 'flex';
+                gameContainer.style.display = 'block';
+
+                if (selectedDifficulty === 'easy') {
+                    gameDuration = 30;
+                } else if (selectedDifficulty === 'medium') {
+                    gameDuration = 20;
+                } else if (selectedDifficulty === 'hard') {
+                    gameDuration = 10;
+                }
+
+                timeLeft = gameDuration;
+                timeDisplay.textContent = `Time: ${timeLeft}`;
+            });
+        });
+
+        startGameButton.addEventListener('click', () => {
+            startGameButton.textContent = "Started...";
+            startGame();
+        });
+
+        function startGame() {
+            score = 0;
+            timeLeft = gameDuration;
+            scoreDisplay.textContent = `Score: ${score}`;
+            timeDisplay.textContent = `Time: ${timeLeft}`;
+            resultDisplay.style.display = 'none';
+            playAgainButton.style.display = 'none';
+
+            countdown = setInterval(() => {
+                timeLeft--;
+                timeDisplay.textContent = `Time: ${timeLeft}`;
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    clearInterval(ballInterval);
+                    displayResults();
+                }
+            }, 1000);
+
+            const ballSpeed = selectedDifficulty === 'easy' ? 1500 : selectedDifficulty === 'medium' ? 1000 : 500;
+            ballInterval = setInterval(moveBall, ballSpeed);
+        }
+
+        function moveBall() {
+            const container = document.getElementById('game-container');
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+
+            const x = Math.random() * (containerWidth - 30);
+            const y = Math.random() * (containerHeight - 30);
+
+            ball.style.left = `${x}px`;
+            ball.style.top = `${y}px`;
+        }
+
+        ball.addEventListener('click', () => {
+            score++;
+            scoreDisplay.textContent = `Score: ${score}`;
+        });
+
+        function displayResults() {
+            const playerName = playerNameInput.value.trim();
+            const attentionRate = (score / gameDuration) * 100;
+            resultDisplay.textContent = `Game Over! Your Score: ${score}. Attention Rate: ${attentionRate.toFixed(2)}%`;
+            resultDisplay.style.display = 'block';
+
+            mockDatabase.push({ playerName, level: selectedDifficulty, score, attentionRate: attentionRate.toFixed(2) });
+            localStorage.setItem('gameScores', JSON.stringify(mockDatabase));
+
+            playAgainButton.style.display = 'inline-block';
+        }
+
+        playAgainButton.addEventListener('click', () => {
+            window.location.reload(); // Reload the game page to restart the game
+        });
+    </script>
+</body>
+</html>
